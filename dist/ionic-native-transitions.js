@@ -124,6 +124,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports['default'] = function () {
 	    'ngInject';
 	
+	    $get.$inject = ["$log", "$ionicConfig", "$rootScope", "$timeout", "$state", "$location", "$ionicHistory", "$ionicPlatform"];
 	    var enabled = true,
 	        $stateChangeStart = null,
 	        $stateChangeSuccess = null,
@@ -155,7 +156,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        backInOppositeDirection: false // Disable default back transition and uses the opposite transition to go back
 	    };
 	
-	    $get.$inject = ["$log", "$ionicConfig", "$rootScope", "$timeout", "$state", "$location", "$ionicHistory", "$ionicPlatform"];
 	    return {
 	        $get: $get,
 	        enable: enable,
@@ -298,8 +298,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return;
 	            }
 	            unregisterToStateChangeStartEvent();
-	            $location.url(url);
+	            var locationPromise = $location.url(url);
 	            transition(transitionOptions);
+	
+	            return locationPromise;
 	        }
 	
 	        /**
@@ -330,8 +332,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return;
 	            }
 	            unregisterToStateChangeStartEvent();
-	            $state.go(state, stateParams, stateOptions);
+	            var statePromise = $state.go(state, stateParams, stateOptions);
 	            transition(transitionOptions);
+	
+	            return statePromise;
 	        }
 	
 	        /**
@@ -509,7 +513,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                if (toState.nativeTransitions === null) {
 	                    return;
 	                }
-	                options = getStateTransition(toState);
+	                options = getInterStateTransition(toState, fromState);
 	                $log.debug('[native transition] $stateChangeStart', toState, options);
 	                transition(options);
 	            });
@@ -526,6 +530,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return angular.extend({}, state.nativeTransitionsBack);
 	            }
 	            return null;
+	        }
+	
+	        function getInterStateTransition(toState, fromState) {
+	            var options = {};
+	            console.log("To State");
+	            console.log(toState);
+	            if (!toState.name.includes(fromState.name)) {
+	                console.log('state not included');
+	                var stateList = toState.name.split('.');
+	                var totalStates = stateList.length - 1;
+	                for (var i = 0; i !== totalStates; i++) {
+	                    var parentState = $state.get(stateList.join('.'));
+	                    console.log(parentState);
+	                    if (!parentState) {
+	                        break;
+	                    }
+	                    var parentOptions = getStateTransition(parentState);
+	                    console.log(parentOptions);
+	                    if (!parentOptions || parentOptions.nativeTransitions === null) {
+	                        break;
+	                    }
+	                    options = parentOptions;
+	                    stateList.pop();
+	                }
+	                var topState = fromState;
+	            } else {
+	                console.log('state is included in previous state');
+	                options = getStateTransition(toState);
+	            }
+	            return options;
+	            //var toOptions = getStateTransition(toState);
+	            //var fromOptions = getStateTransition(fromState);
 	        }
 	
 	        function getStateTransition(state) {
