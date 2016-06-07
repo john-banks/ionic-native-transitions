@@ -542,7 +542,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            console.log("To State");
 	            console.log(toState);
 	            console.log(toState.name.indexOf(fromState.name));
-	            if (toState.name.indexOf(fromState.name) === -1) {
+	            //if(toState.name.indexOf(fromState.name)===-1){
+	            if (!toState.name.includes(fromState.name)) {
 	                console.log('state not included');
 	                var stateList = toState.name.split('.');
 	                var totalStates = stateList.length;
