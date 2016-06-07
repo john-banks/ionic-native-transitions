@@ -327,10 +327,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                $log.debug('[native transition] cannot change state without a state...');
 	                return;
 	            }
-	            if ($state.current.name === state) {
+	            /*
+	            if ($state.current.name === state){
 	                $log.debug('[native transition] same state transition are not possible');
 	                return;
 	            }
+	            */
 	            unregisterToStateChangeStartEvent();
 	            var statePromise = $state.go(state, stateParams, stateOptions);
 	            transition(transitionOptions);
@@ -537,12 +539,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        function getInterStateTransition(toState, fromState) {
 	            var options = {};
-	            console.log("From state");
-	            console.log(fromState);
 	            console.log("To State");
 	            console.log(toState);
-	            console.log(toState.name.indexOf(fromState.name));
-	            //if(toState.name.indexOf(fromState.name)===-1){
 	            if (!toState.name.includes(fromState.name)) {
 	                console.log('state not included');
 	                var stateList = toState.name.split('.');
