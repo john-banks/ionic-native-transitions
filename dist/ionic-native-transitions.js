@@ -504,18 +504,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return;
 	            }
 	            $stateChangeStart = $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-	                var options = null;
-	                // Abort if event was preventDefault'ed
-	                if (event.defaultPrevented) {
-	                    return;
-	                }
-	                // Disable native transition for this state
-	                if (toState.nativeTransitions === null) {
-	                    return;
-	                }
-	                options = getInterStateTransition(toState, fromState);
-	                $log.debug('[native transition] $stateChangeStart', toState, options);
-	                transition(options);
+	                $rootScope.$broadcast('stopVideos');
+	                $timeout(function () {
+	                    console.log('carrying out the transition');
+	                    var options = null;
+	                    // Abort if event was preventDefault'ed
+	                    if (event.defaultPrevented) {
+	                        return;
+	                    }
+	                    // Disable native transition for this state
+	                    if (toState.nativeTransitions === null) {
+	                        return;
+	                    }options = getInterStateTransition(toState, fromState);
+	                    $log.debug('[native transition] $stateChangeStart', toState, options);
+	                    transition(options);
+	                }, 100);
 	            });
 	        }
 	
@@ -536,7 +539,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var options = {};
 	            console.log("To State");
 	            console.log(toState);
-	            if (!toState.name.includes(fromState.name)) {
+	            if (toState.name.indexOf(fromState.name) == -1) {
 	                console.log('state not included');
 	                var stateList = toState.name.split('.');
 	                var totalStates = stateList.length;
