@@ -537,9 +537,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        function getInterStateTransition(toState, fromState) {
 	            var options = {};
+	            console.log("From state");
+	            console.log(fromState);
 	            console.log("To State");
 	            console.log(toState);
-	            if (toState.name.indexOf(fromState.name) == -1) {
+	            console.log(toState.name.indexOf(fromState.name));
+	            if (toState.name.indexOf(fromState.name) === -1) {
 	                console.log('state not included');
 	                var stateList = toState.name.split('.');
 	                var totalStates = stateList.length;
