@@ -327,12 +327,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                $log.debug('[native transition] cannot change state without a state...');
 	                return;
 	            }
-	            /*
-	            if ($state.current.name === state){
+	            if ($state.current.name === state) {
 	                $log.debug('[native transition] same state transition are not possible');
 	                return;
 	            }
-	            */
 	            unregisterToStateChangeStartEvent();
 	            var statePromise = $state.go(state, stateParams, stateOptions);
 	            transition(transitionOptions);
@@ -500,6 +498,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	            $stateChangeError = $rootScope.$on('$stateChangeError', executePendingTransition);
 	            $stateAfterEnter = $rootScope.$on(getDefaultOptions().triggerTransitionEvent, executePendingTransition);
 	        }
+	        /*
+	        function registerToStateChangeStartEvent() {
+	            if ($stateChangeStart) {
+	                return;
+	            }
+	            $stateChangeStart = $rootScope.$on('$stateChangeStart', (event, toState, toParams, fromState, fromParams) => {
+	                let options = null;
+	                // Abort if event was preventDefault'ed
+	                if (event.defaultPrevented) {
+	                    return;
+	                }
+	                // Disable native transition for this state
+	                if (toState.nativeTransitions === null) {
+	                    return;
+	                }
+	                options = getInterStateTransition(toState,fromState);
+	                $log.debug('[native transition] $stateChangeStart', toState, options);
+	                transition(options);
+	            });
+	        }
+	        */
 	
 	        function registerToStateChangeStartEvent() {
 	            if ($stateChangeStart) {
@@ -507,20 +526,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            $stateChangeStart = $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
 	                $rootScope.$broadcast('stopVideos');
-	                $timeout(function () {
-	                    console.log('carrying out the transition');
-	                    var options = null;
-	                    // Abort if event was preventDefault'ed
-	                    if (event.defaultPrevented) {
-	                        return;
-	                    }
-	                    // Disable native transition for this state
-	                    if (toState.nativeTransitions === null) {
-	                        return;
-	                    }options = getInterStateTransition(toState, fromState);
-	                    $log.debug('[native transition] $stateChangeStart', toState, options);
-	                    transition(options);
-	                }, 100);
+	                //$timeout(function(){
+	                console.log('carrying out the transition');
+	                var options = null;
+	                // Abort if event was preventDefault'ed
+	                if (event.defaultPrevented) {
+	                    return;
+	                }
+	                // Disable native transition for this state
+	                if (toState.nativeTransitions === null) {
+	                    return;
+	                }
+	                options = getInterStateTransition(toState, fromState);
+	                $log.debug('[native transition] $stateChangeStart', toState, options);
+	                transition(options);
+	                //},100);
 	            });
 	        }
 	
